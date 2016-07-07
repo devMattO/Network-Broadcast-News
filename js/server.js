@@ -7,12 +7,18 @@ const server = net.createServer((socket)=>{
     users.push(socket);
     console.log('client connected');
     socket.on('data', ( data ) => {
-      process.stdout.write('random user: ' + data.toString());
       for (var i = 0; i < users.length; i++) {
-        if(users[i] !== socket){ //if sender is same as receiver dont send!
-          users[i].write('random user: ' + data);
+
+        if(socket.name === undefined){
+          socket.name = data.toString().replace(/(\r\n|\n|\r)/gm,"");
+          return;
+        }
+
+        else if(users[i] !== socket){ //if sender is same as receiver dont send!
+          users[i].write(socket.name + ': ' + data);
         }
       }
+      process.stdout.write(socket.name + ': ' + data.toString());
     });
 });
 
